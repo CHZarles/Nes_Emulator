@@ -1,4 +1,39 @@
 ﻿
+/*
+	License (OLC-3)
+	~~~~~~~~~~~~~~~
+
+	Copyright 2018-2019 OneLoneCoder.com
+
+	Redistribution and use in source and binary forms, with or without
+	modification, are permitted provided that the following conditions
+	are met:
+
+	1. Redistributions or derivations of source code must retain the above
+	copyright notice, this list of conditions and the following disclaimer.
+
+	2. Redistributions or derivative works in binary form must reproduce
+	the above copyright notice. This list of conditions and the following
+	disclaimer must be reproduced in the documentation and/or other
+	materials provided with the distribution.
+
+	3. Neither the name of the copyright holder nor the names of its
+	contributors may be used to endorse or promote products derived
+	from this software without specific prior written permission.
+
+	THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+	"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+	LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+	A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+	HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+	SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+	LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+	DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+	THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+	(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+	OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
+
 #include <iostream>
 #include <sstream>
 
@@ -22,6 +57,8 @@ private:
 	// 这两个变量是用来控制时间的
 	bool bEmulationRun = false;
 	float fResidualTime = 0.0f;
+	// 控制速度
+	float frequence = 60;
 
 	
 
@@ -58,6 +95,19 @@ private:
 		nes.controller[0] |= GetKey(olc::Key::DOWN).bHeld ? 0x04 : 0x00;
 		nes.controller[0] |= GetKey(olc::Key::LEFT).bHeld ? 0x02 : 0x00;
 		nes.controller[0] |= GetKey(olc::Key::RIGHT).bHeld ? 0x01 : 0x00;
+		
+		
+		if (GetKey(olc:: Key :: W).bPressed){
+			frequence++;
+			printf("加速，当前刷新率 : 1 / %.f \n", frequence);
+		}
+
+		if (GetKey(olc::Key:: E ).bPressed) {
+			frequence--;
+			printf("减速 ，当前刷新率 : 1 / %.f \n", frequence);
+		}
+		
+		
 
 		// 暂停模拟
 		if (GetKey(olc::Key::SPACE).bPressed) bEmulationRun = !bEmulationRun;
@@ -72,7 +122,7 @@ private:
 			else
 			{
 				// 这是控制60帧的关键
-				fResidualTime += (1.0f / 60.0f) - fElapsedTime;
+				fResidualTime += (1.0f / frequence ) - fElapsedTime;
 				do { nes.clock(); } while (!nes.ppu.frame_complete);
 				nes.ppu.frame_complete = false;
 			}
